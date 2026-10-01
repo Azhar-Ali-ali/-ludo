@@ -1,0 +1,25 @@
+.home {
+  position: relative;
+  min-height: 100vh;
+
+  background-image: url("../assets/06f7bc1e9f870646b97d066ab6cd2e97.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Dark overlay */
+.home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 0;
+}
+
+/* Keep your actual content above the overlay */
+.home > * {
+  position: relative;
+  z-index: 1;
+}
