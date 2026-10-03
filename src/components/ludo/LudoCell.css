@@ -1,0 +1,337 @@
+/* =========================================
+   BASIC CELL
+========================================= */
+
+.ludo-cell {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #a9a9a9;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  overflow: hidden;
+}
+
+/* Green safe place */
+.ludo-cell[data-row="6"][data-col="1"],
+.ludo-cell[data-row="8"][data-col="2"] {
+  background: #d9f7e3;
+}
+
+/* Yellow safe place */
+.ludo-cell[data-row="2"][data-col="6"],
+.ludo-cell[data-row="1"][data-col="8"] {
+  background: #fff4c2;
+}
+
+/* Red safe place */
+.ludo-cell[data-row="6"][data-col="12"],
+.ludo-cell[data-row="8"][data-col="13"] {
+  background: #ffdcdc;
+}
+
+/* Blue safe place */
+.ludo-cell[data-row="13"][data-col="6"],
+.ludo-cell[data-row="12"][data-col="8"] {
+  background: #dceeff;
+}
+/* =========================================
+   BASE / PLAYER HOME AREAS
+========================================= */
+
+.cell-base {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Green */
+.cell-color-green.cell-base {
+  background: #159447;
+}
+
+/* Yellow */
+.cell-color-yellow.cell-base {
+  background: #f6c928;
+}
+
+/* Red */
+.cell-color-red.cell-base {
+  background: #df3030;
+}
+
+/* Blue */
+.cell-color-blue.cell-base {
+  background: #2689d8;
+}
+
+
+/* =========================================
+   INNER HOME AREA
+========================================= */
+
+.cell-base-inner {
+  background: #ffffff;
+  border: none;
+}
+
+
+/* =========================================
+   TOKEN SPOTS
+========================================= */
+
+.cell-token-spot {
+  background: #ffffff;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell-token-spot::before {
+  content: "";
+
+  width: 72%;
+  height: 72%;
+
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  box-shadow:
+    inset 0 0 0 3px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Green token spots */
+.cell-color-green.cell-token-spot::before {
+  box-shadow:
+    inset 0 0 0 5px #159447,
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Yellow token spots */
+.cell-color-yellow.cell-token-spot::before {
+  box-shadow:
+    inset 0 0 0 5px #f6c928,
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Red token spots */
+.cell-color-red.cell-token-spot::before {
+  box-shadow:
+    inset 0 0 0 5px #df3030,
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Blue token spots */
+.cell-color-blue.cell-token-spot::before {
+  box-shadow:
+    inset 0 0 0 5px #2689d8,
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================================
+   NORMAL TRACK CELLS
+========================================= */
+
+.cell-normal {
+  background: #ffffff;
+
+  border: 1px solid #a9a9a9;
+}
+
+
+/* =========================================
+   SAFE CELLS
+========================================= */
+
+.cell-safe {
+  position: relative;
+
+  background: #ffffff;
+
+  border: 1px solid #a9a9a9;
+}
+
+
+/* Star inside safe/start cell */
+.safe-star {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: clamp(12px, 1.8vw, 21px);
+
+  line-height: 1;
+
+  color: #555555;
+
+  z-index: 9999;
+
+  pointer-events: none;
+}
+
+
+/* =========================================
+   START CELLS
+========================================= */
+
+.cell-start {
+  position: relative;
+
+  border: 2px solid rgba(0, 0, 0, 0.35);
+
+  z-index: 2;
+}
+
+
+/* Green start */
+.cell-start.cell-color-green {
+  background: #ddf7e6;
+}
+
+
+/* Yellow start */
+.cell-start.cell-color-yellow {
+  background: #fff6c9;
+}
+
+
+/* Red start */
+.cell-start.cell-color-red {
+  background: #ffe3e3;
+}
+
+
+/* Blue start */
+.cell-start.cell-color-blue {
+  background: #dcefff;
+}
+
+
+/* =========================================
+   HOME PATH
+========================================= */
+
+.cell-home-path {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+
+/* Green home path */
+.cell-home-path.cell-color-green {
+  background: #159447;
+}
+
+
+/* Yellow home path */
+.cell-home-path.cell-color-yellow {
+  background: #f6c928;
+}
+
+
+/* Red home path */
+.cell-home-path.cell-color-red {
+  background: #df3030;
+}
+
+
+/* Blue home path */
+.cell-home-path.cell-color-blue {
+  background: #2689d8;
+}
+
+
+/* =========================================
+   CENTER AREA
+========================================= */
+
+.cell-center {
+  border: 0;
+}
+
+
+/* Green center */
+.cell-center.cell-color-green {
+  background: #159447;
+}
+
+
+/* Red center */
+.cell-center.cell-color-red {
+  background: #df3030;
+}
+
+
+/* Yellow center */
+.cell-center.cell-color-yellow {
+  background: #f6c928;
+}
+
+
+/* Blue center */
+.cell-center.cell-color-blue {
+  background: #2689d8;
+}
+
+
+/* Center white area */
+.cell-center.cell-color-center {
+  background: #ffffff;
+}
+
+
+/* =========================================
+   HOVER
+========================================= */
+
+.ludo-cell:hover {
+  z-index: 10;
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+  .safe-star {
+    font-size: 13px;
+  }
+
+  .cell-start {
+    border-width: 1px;
+  }
+
+  .cell-token-spot::before {
+    width: 68%;
+    height: 68%;
+  }
+}

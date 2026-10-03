@@ -1,5 +1,5 @@
 import "./Hero.css";
-function Hero() {
+function Hero({onPlay}) {
   return (
     <section className="hero"
   >
@@ -23,11 +23,14 @@ function Hero() {
           </p>
 
           <div className="hero-actions">
-            <button className="primary-button dice-btn">
-              <span className="pip top-left"></span>
-              <span className="pip bottom-right"></span>
-              <span className="btn-text">Play Now</span>
-            </button>
+             <button
+    className="primary-button dice-btn"
+    onClick={onPlay}
+  >
+    <span className="pip top-left"></span>
+    <span className="pip bottom-right"></span>
+    <span className="btn-text">Play Now</span>
+  </button>
 
             <button className="secondary-button dice-btn">
               <span className="pip top-left"></span>

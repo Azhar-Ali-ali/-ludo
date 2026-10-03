@@ -1,0 +1,95 @@
+/* ==========================================
+   BOARD WRAPPER
+========================================== */
+
+.ludo-board-wrapper {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   15 x 15 BOARD
+========================================== */
+
+.ludo-board-container {
+  width: min(90vw, 620px);
+
+  aspect-ratio: 1 / 1;
+
+  display: grid;
+
+  grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr);
+
+  gap: 0;
+
+  background: #ffffff;
+
+  border: 5px solid #20202a;
+
+  border-radius: 8px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 0 25px rgba(0, 0, 0, 0.15);
+
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   CELLS FIT PERFECTLY
+========================================== */
+
+.ludo-board-container > .ludo-cell {
+  min-width: 0;
+  min-height: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+  .ludo-board-wrapper {
+    padding: 10px;
+  }
+
+  .ludo-board-container {
+    width: 96vw;
+    max-width: 620px;
+
+    border-width: 3px;
+  }
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+  .ludo-board-wrapper {
+    padding: 5px;
+  }
+
+  .ludo-board-container {
+    width: 98vw;
+
+    border-width: 2px;
+  }
+}

@@ -1,0 +1,392 @@
+.game-page {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+
+  padding: 30px 20px;
+
+  background: #15151d;
+}
+
+.game-container {
+  width: 100%;
+  max-width: 1250px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 20px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   TURN INDICATOR
+========================================= */
+
+.game-turn-section {
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 5px;
+}
+
+
+/* =========================================
+   MAIN BOARD LAYOUT
+========================================= */
+
+.players-board-layout {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(190px, 1fr)
+    minmax(400px, 620px)
+    minmax(190px, 1fr);
+
+  grid-template-rows:
+    auto
+    1fr
+    auto;
+
+  align-items: center;
+  justify-content: center;
+
+  column-gap: 25px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   BOARD
+========================================= */
+
+.board-section {
+  grid-column: 2;
+  grid-row: 1 / 4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+}
+
+
+/* =========================================
+   PLAYER POSITION
+========================================= */
+
+.player-position {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   TOP LEFT
+   Player 1 + Dice
+========================================= */
+
+.player-top-left {
+  grid-column: 1;
+  grid-row: 1;
+
+  justify-content: flex-end;
+}
+
+
+/* =========================================
+   TOP RIGHT
+   Dice + Player 2
+========================================= */
+
+.player-top-right {
+  grid-column: 3;
+  grid-row: 1;
+
+  justify-content: flex-start;
+}
+
+
+/* =========================================
+   BOTTOM LEFT
+   Player 4 + Dice
+========================================= */
+
+.player-bottom-left {
+  grid-column: 1;
+  grid-row: 3;
+
+  justify-content: flex-end;
+}
+
+
+/* =========================================
+   BOTTOM RIGHT
+   Dice + Player 3
+========================================= */
+
+.player-bottom-right {
+  grid-column: 3;
+  grid-row: 3;
+
+  justify-content: flex-start;
+}
+
+
+/* =========================================
+   PLAYER PANEL
+========================================= */
+
+.player-position .player-panel {
+  width: auto;
+
+  margin: 0;
+
+  flex-shrink: 0;
+}
+
+
+/* =========================================
+   DICE
+========================================= */
+
+.player-position .dice-component-wrapper {
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* Dice size */
+
+.player-position .dice-face {
+  width: 55px;
+  height: 55px;
+
+  cursor: pointer;
+}
+
+
+/* Roll button */
+
+.player-position .roll-dice-btn {
+  margin-top: 6px;
+
+  font-size: 11px;
+
+  padding: 5px 9px;
+}
+
+
+/* =========================================
+   DISABLED DICE
+========================================= */
+
+.player-position .dice-face.disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  filter: grayscale(0.5);
+}
+
+.player-position .roll-dice-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================================
+   GAME FOOTER
+========================================= */
+
+.game-footer-section {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+
+  margin-top: 5px;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 1000px) {
+
+  .players-board-layout {
+    grid-template-columns:
+      minmax(140px, 1fr)
+      minmax(350px, 520px)
+      minmax(140px, 1fr);
+
+    column-gap: 15px;
+  }
+
+  .player-position {
+    gap: 7px;
+  }
+
+  .player-position .dice-face {
+    width: 48px;
+    height: 48px;
+  }
+
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+  .game-page {
+    padding: 20px 10px;
+  }
+
+  .players-board-layout {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    grid-template-rows:
+      auto
+      auto
+      auto;
+
+    gap: 15px 10px;
+  }
+
+
+  /* Board */
+
+  .board-section {
+    grid-column: 1 / 3;
+
+    grid-row: 2;
+  }
+
+
+  /* Top left */
+
+  .player-top-left {
+    grid-column: 1;
+    grid-row: 1;
+
+    justify-content: flex-start;
+  }
+
+
+  /* Top right */
+
+  .player-top-right {
+    grid-column: 2;
+    grid-row: 1;
+
+    justify-content: flex-end;
+  }
+
+
+  /* Bottom left */
+
+  .player-bottom-left {
+    grid-column: 1;
+    grid-row: 3;
+
+    justify-content: flex-start;
+  }
+
+
+  /* Bottom right */
+
+  .player-bottom-right {
+    grid-column: 2;
+    grid-row: 3;
+
+    justify-content: flex-end;
+  }
+
+
+  .player-position .player-card {
+    min-width: 0;
+  }
+
+
+  .player-position .dice-face {
+    width: 42px;
+    height: 42px;
+  }
+
+
+  .player-position .roll-dice-btn {
+    font-size: 10px;
+
+    padding: 4px 6px;
+  }
+
+
+  .game-footer-section {
+    flex-direction: column;
+  }
+
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+  .game-page {
+    padding: 15px 5px;
+  }
+
+  .players-board-layout {
+    gap: 10px 5px;
+  }
+
+  .player-position {
+    gap: 4px;
+  }
+
+  .player-position .dice-face {
+    width: 38px;
+    height: 38px;
+  }
+
+  .player-position .roll-dice-btn {
+    display: none;
+  }
+
+}

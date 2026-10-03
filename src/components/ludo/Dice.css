@@ -1,0 +1,102 @@
+/* Dice Component Wrapper Container */
+.dice-component-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Visual Dice Cube Face */
+.dice-face {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5),
+              inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dice-face:hover:not(.disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(255, 59, 48, 0.3),
+              inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.dice-face.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Rolling Shake Animation */
+.dice-face.rolling {
+  animation: shake 0.4s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-10deg) scale(1.05); }
+  50% { transform: rotate(10deg) scale(0.95); }
+  75% { transform: rotate(-5deg) scale(1.02); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* 3x3 Grid Matrix inside Dice Face for Pips */
+.dice-grid {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 4px;
+}
+
+/* Individual Pip Slots */
+.pip-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pip-slot.active::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  background-color: #1a1a24;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Roll Action Button */
+.roll-dice-btn {
+  background: linear-gradient(135deg, #ff3b30 0%, #c92a2a 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.roll-dice-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 59, 48, 0.6);
+}
+
+.roll-dice-btn:disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: #6c6c75;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
