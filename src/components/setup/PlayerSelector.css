@@ -1,145 +1,365 @@
-/* Player Selector Section Container */
+/* =========================================
+   PLAYER SELECTOR
+========================================= */
+
 .player-selector {
   position: relative;
+
   width: 100%;
+  min-height: 100vh;
+
   padding: 100px 20px;
+
   background-color: #08080c;
-  background-image: linear-gradient(180deg, #060609 0%, #0b0b0f 100%);
+  background-image:
+    linear-gradient(
+      180deg,
+      #060609 0%,
+      #0b0b0f 100%
+    );
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
   color: #ffffff;
+
   overflow: hidden;
+
+  box-sizing: border-box;
 }
 
-/* Heading Area */
+
+/* =========================================
+   HEADING
+========================================= */
+
 .player-heading {
   text-align: center;
+
   max-width: 700px;
+
   margin-bottom: 50px;
 }
 
 .player-heading h1 {
   font-size: 2.8rem;
+
   font-weight: 900;
-  margin-bottom: 12px;
+
+  margin: 0 0 12px;
+
   letter-spacing: 0.5px;
 }
 
 .player-heading p {
+  margin: 0;
+
   font-size: 1.05rem;
+
   color: #98989f;
 }
 
-/* Player Cards Grid Container */
+
+/* =========================================
+   PLAYER CARDS
+========================================= */
+
 .player-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
   gap: 30px;
+
   max-width: 1200px;
+
   width: 100%;
+
   margin-bottom: 50px;
 }
 
-/* Individual Player Card */
+
+/* =========================================
+   PLAYER CARD
+========================================= */
+
 .player-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background:
+    rgba(255, 255, 255, 0.03);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+
   border-radius: 24px;
+
   padding: 40px 30px;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
   text-align: center;
+
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.4);
+
+  box-sizing: border-box;
 }
+
+
+/* Hover */
 
 .player-card:hover {
   transform: translateY(-8px);
-  border-color: rgba(255, 59, 48, 0.4);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6),
-              0 0 30px rgba(255, 59, 48, 0.15);
+
+  border-color:
+    rgba(255, 59, 48, 0.4);
+
+  background:
+    rgba(255, 255, 255, 0.05);
+
+  box-shadow:
+    0 20px 45px
+    rgba(0, 0, 0, 0.6),
+
+    0 0 30px
+    rgba(255, 59, 48, 0.15);
 }
 
-/* Icon Styling */
+
+/* =========================================
+   SELECTED CARD
+========================================= */
+
+.player-card.selected-player-card {
+  border:
+    2px solid #ff3b30;
+
+  background:
+    rgba(255, 59, 48, 0.1);
+
+  transform:
+    translateY(-5px);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.4),
+
+    0 0 30px
+    rgba(255, 59, 48, 0.25);
+}
+
+
+/* =========================================
+   PLAYER ICON
+========================================= */
+
 .player-icon {
   width: 70px;
   height: 70px;
-  background: rgba(255, 59, 48, 0.1);
-  border: 1px solid rgba(255, 59, 48, 0.3);
+
+  background:
+    rgba(255, 59, 48, 0.1);
+
+  border:
+    1px solid
+    rgba(255, 59, 48, 0.3);
+
   border-radius: 20px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-size: 1.8rem;
+
   margin-bottom: 25px;
-  transition: transform 0.3s ease;
+
+  transition:
+    transform 0.3s ease,
+    background 0.3s ease;
 }
+
 
 .player-card:hover .player-icon {
   transform: scale(1.1);
-  background: rgba(255, 59, 48, 0.2);
+
+  background:
+    rgba(255, 59, 48, 0.2);
 }
 
-/* Card Title */
+
+.player-card.selected-player-card .player-icon {
+  background:
+    rgba(255, 59, 48, 0.25);
+
+  border-color:
+    #ff3b30;
+}
+
+
+/* =========================================
+   TITLE
+========================================= */
+
 .player-card h2 {
   font-size: 1.4rem;
+
   font-weight: 800;
+
   color: #ffffff;
-  margin-bottom: 12px;
+
+  margin:
+    0 0 12px;
 }
 
-/* Card Description */
+
+/* =========================================
+   DESCRIPTION
+========================================= */
+
 .player-card p {
   font-size: 0.95rem;
+
   color: #98989f;
+
   line-height: 1.5;
+
+  margin: 0;
 }
 
-/* Start Game Action Area & Button */
+
+/* =========================================
+   START GAME
+========================================= */
+
 .player-actions {
   display: flex;
+
   justify-content: center;
+
   width: 100%;
+
   max-width: 400px;
 }
 
+
 .start-game-btn {
   width: 100%;
-  background: linear-gradient(135deg, #ff3b30 0%, #c92a2a 100%);
+
+  background:
+    linear-gradient(
+      135deg,
+      #ff3b30 0%,
+      #c92a2a 100%
+    );
+
   color: #ffffff;
+
   border: none;
+
   padding: 16px 28px;
+
   font-size: 1.1rem;
+
   font-weight: 700;
+
   border-radius: 14px;
+
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(255, 59, 48, 0.4);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  box-shadow:
+    0 4px 20px
+    rgba(255, 59, 48, 0.4);
+
   text-transform: uppercase;
+
   letter-spacing: 1px;
 }
 
+
 .start-game-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(255, 59, 48, 0.6);
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 6px 25px
+    rgba(255, 59, 48, 0.6);
 }
 
-/* Responsive Breakpoints */
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
 @media (max-width: 968px) {
+
+  .player-selector {
+    padding:
+      70px 20px;
+  }
+
   .player-cards {
     grid-template-columns: 1fr;
+
     max-width: 450px;
+
+    gap: 20px;
   }
 
   .player-heading h1 {
     font-size: 2.3rem;
+  }
+}
+
+
+@media (max-width: 480px) {
+
+  .player-selector {
+    padding:
+      50px 15px;
+  }
+
+  .player-heading {
+    margin-bottom: 35px;
+  }
+
+  .player-heading h1 {
+    font-size: 1.8rem;
+  }
+
+  .player-heading p {
+    font-size: 0.95rem;
+  }
+
+  .player-card {
+    padding:
+      30px 20px;
+  }
+
+  .start-game-btn {
+    font-size: 1rem;
   }
 }
