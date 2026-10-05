@@ -1,62 +1,173 @@
-/* Dice Component Wrapper Container */
+/* ================================
+   DICE COMPONENT
+================================ */
+
 .dice-component-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
 }
 
-/* Visual Dice Cube Face */
+
+/* ================================
+   DICE FACE
+================================ */
+
 .dice-face {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, #ffffff 0%, #e9ecef 100%);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5),
-              inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  width: 72px;
+  height: 72px;
+
+  background: #ffffff;
+  border-radius: 14px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+
+  box-shadow:
+    0 5px 0 #d1d1d1,
+    0 8px 18px rgba(0, 0, 0, 0.25);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  transform-style: preserve-3d;
+  perspective: 800px;
 }
+
+
+/* Hover */
 
 .dice-face:hover:not(.disabled) {
-  transform: scale(1.05);
-  box-shadow: 0 12px 30px rgba(255, 59, 48, 0.3),
-              inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 0 #d1d1d1,
+    0 12px 22px rgba(0, 0, 0, 0.28);
 }
 
-.dice-face.disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+
+/* Click */
+
+.dice-face:active:not(.disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    0 2px 0 #d1d1d1,
+    0 5px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Rolling Shake Animation */
+
+/* ================================
+   DICE ROLL ANIMATION
+================================ */
+
 .dice-face.rolling {
-  animation: shake 0.4s ease-in-out infinite;
+  animation: diceRoll 0.8s ease-in-out;
 }
 
-@keyframes shake {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(-10deg) scale(1.05); }
-  50% { transform: rotate(10deg) scale(0.95); }
-  75% { transform: rotate(-5deg) scale(1.02); }
-  100% { transform: rotate(0deg) scale(1); }
+
+/*
+   The die rotates and slightly
+   changes size while rolling.
+*/
+
+@keyframes diceRoll {
+
+  0% {
+    transform:
+      rotate(0deg)
+      scale(1);
+  }
+
+  10% {
+    transform:
+      rotate(45deg)
+      scale(1.08);
+  }
+
+  20% {
+    transform:
+      rotate(90deg)
+      scale(1.12);
+  }
+
+  30% {
+    transform:
+      rotate(180deg)
+      scale(1.08);
+  }
+
+  40% {
+    transform:
+      rotate(270deg)
+      scale(1.12);
+  }
+
+  50% {
+    transform:
+      rotate(360deg)
+      scale(1.08);
+  }
+
+  60% {
+    transform:
+      rotate(450deg)
+      scale(1.12);
+  }
+
+  70% {
+    transform:
+      rotate(540deg)
+      scale(1.08);
+  }
+
+  80% {
+    transform:
+      rotate(630deg)
+      scale(1.05);
+  }
+
+  90% {
+    transform:
+      rotate(700deg)
+      scale(1.02);
+  }
+
+  100% {
+    transform:
+      rotate(720deg)
+      scale(1);
+  }
 }
 
-/* 3x3 Grid Matrix inside Dice Face for Pips */
+
+/* ================================
+   DICE GRID
+================================ */
+
 .dice-grid {
-  width: 48px;
-  height: 48px;
+  width: 54px;
+  height: 54px;
+
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  padding: 4px;
+
+  gap: 3px;
+
+  pointer-events: none;
 }
 
-/* Individual Pip Slots */
+
+/* ================================
+   DICE PIP
+================================ */
+
 .pip-slot {
   display: flex;
   align-items: center;
@@ -64,39 +175,158 @@
 }
 
 .pip-slot.active::after {
-  content: '';
-  width: 9px;
-  height: 9px;
-  background-color: #1a1a24;
+  content: "";
+
+  width: 11px;
+  height: 11px;
+
+  background: #111111;
+
   border-radius: 50%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+  box-shadow:
+    inset 1px 1px 2px rgba(255, 255, 255, 0.35),
+    1px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Roll Action Button */
-.roll-dice-btn {
-  background: linear-gradient(135deg, #ff3b30 0%, #c92a2a 100%);
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 59, 48, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+
+/* ================================
+   DISABLED DICE
+================================ */
+
+.dice-face.disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+
+  box-shadow:
+    0 4px 0 #d5d5d5,
+    0 6px 12px rgba(0, 0, 0, 0.15);
 }
+
+.dice-face.disabled:hover {
+  transform: none;
+}
+
+
+/* ================================
+   ROLL DICE BUTTON
+================================ */
+
+.roll-dice-btn {
+  border: none;
+  outline: none;
+
+  padding: 9px 18px;
+
+  border-radius: 8px;
+
+  background: #111111;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Hover */
 
 .roll-dice-btn:hover:not(:disabled) {
+  background: #222222;
+
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 59, 48, 0.6);
+
+  box-shadow:
+    0 5px 12px rgba(0, 0, 0, 0.25);
 }
 
+
+/* Click */
+
+.roll-dice-btn:active:not(:disabled) {
+  transform: translateY(1px);
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Disabled button */
+
 .roll-dice-btn:disabled {
-  background: rgba(255, 255, 255, 0.1);
-  color: #6c6c75;
   cursor: not-allowed;
-  box-shadow: none;
+  opacity: 0.5;
+
   transform: none;
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 600px) {
+
+  .dice-face {
+    width: 62px;
+    height: 62px;
+
+    border-radius: 12px;
+  }
+
+  .dice-grid {
+    width: 47px;
+    height: 47px;
+  }
+
+  .pip-slot.active::after {
+    width: 9px;
+    height: 9px;
+  }
+
+  .roll-dice-btn {
+    padding: 8px 15px;
+    font-size: 13px;
+  }
+}
+
+
+/* ================================
+   ACCESSIBILITY
+================================ */
+
+.dice-face:focus-visible {
+  outline: 3px solid #4d90fe;
+  outline-offset: 4px;
+}
+
+.roll-dice-btn:focus-visible {
+  outline: 3px solid #4d90fe;
+  outline-offset: 3px;
+}
+
+
+/* ================================
+   REDUCED MOTION
+================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .dice-face,
+  .roll-dice-btn {
+    transition: none;
+  }
+
+  .dice-face.rolling {
+    animation: none;
+  }
 }

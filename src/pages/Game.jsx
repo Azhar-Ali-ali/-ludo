@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import LudoBoard from "../components/ludo/LudoBoard";
@@ -14,23 +14,28 @@ function Game() {
   const navigate = useNavigate();
 
   /* =========================================
-     GET PLAYER COUNT
+     GET URL PARAMETERS
   ========================================= */
 
-  const params = new URLSearchParams(
-    location.search
-  );
+  const params = new URLSearchParams(location.search);
 
-  const urlPlayerCount = Number(
-    params.get("players")
-  );
+  const urlPlayerCount = Number(params.get("players"));
 
-  const playerCount = [2, 3, 4].includes(
-    urlPlayerCount
-  )
-    ? urlPlayerCount
-    : 4;
+  const gameMode = params.get("mode");
 
+  const difficulty = params.get("difficulty") || "medium";
+
+  const isComputerGame = gameMode === "computer";
+
+  /* =========================================
+     PLAYER COUNT
+  ========================================= */
+
+  const playerCount = isComputerGame
+    ? 2
+    : [2, 3, 4].includes(urlPlayerCount)
+      ? urlPlayerCount
+      : 4;
 
   /* =========================================
      ALL PLAYERS
@@ -39,7 +44,7 @@ function Game() {
   const allPlayers = [
     {
       id: 1,
-      name: "Player 1",
+      name: isComputerGame ? "You" : "Player 1",
       color: "green",
     },
 
@@ -51,7 +56,7 @@ function Game() {
 
     {
       id: 3,
-      name: "Player 3",
+      name: isComputerGame ? "Computer" : "Player 3",
       color: "red",
     },
 
@@ -62,34 +67,30 @@ function Game() {
     },
   ];
 
-
   /* =========================================
      SELECT ACTIVE PLAYERS
 
-     2 Players:
+     Normal 2 players:
      Green + Red
 
-     3 Players:
+     Computer:
+     Green = You
+     Red = Computer
+
+     3 players:
      Green + Yellow + Red
 
-     4 Players:
+     4 players:
      Green + Yellow + Red + Blue
   ========================================= */
 
   let players;
 
   if (playerCount === 2) {
-    players = [
-      allPlayers[0], // Green
-      allPlayers[2], // Red
-    ];
+    players = [allPlayers[0], allPlayers[2]];
   } else {
-    players = allPlayers.slice(
-      0,
-      playerCount
-    );
+    players = allPlayers.slice(0, playerCount);
   }
-
 
   /* =========================================
      ACTIVE COLORS
@@ -99,6 +100,25 @@ function Game() {
     (player) => player.color
   );
 
+  /* =========================================
+     COMPUTER
+  ========================================= */
+
+  const computerPlayerId = 3;
+  const computerColor = "red";
+
+  /*
+     IMPORTANT:
+
+     The computer turn must depend on the
+     CURRENT PLAYER.
+
+     Do NOT check whether computer exists.
+  */
+
+  const isComputerTurn =
+    isComputerGame &&
+    currentPlayer === computerPlayerId;
 
   /* =========================================
      TOKEN INITIAL STATE
@@ -116,33 +136,32 @@ function Game() {
     -1,
   ];
 
-
-  const [tokenPositions, setTokenPositions] =
-    useState({
-      green: createTokens(),
-      yellow: createTokens(),
-      red: createTokens(),
-      blue: createTokens(),
-    });
-
+  const [
+    tokenPositions,
+    setTokenPositions,
+  ] = useState({
+    green: createTokens(),
+    yellow: createTokens(),
+    red: createTokens(),
+    blue: createTokens(),
+  });
 
   /* =========================================
      CURRENT PLAYER
 
-     Store actual player ID.
+     Computer game:
 
-     2-player example:
-
-     1 = Green
-     3 = Red
-
-     Turn:
-     1 → 3 → 1 → 3
+     Green / You
+          ↓
+     Red / Computer
+          ↓
+     Green / You
   ========================================= */
 
-  const [currentPlayer, setCurrentPlayer] =
-    useState(players[0].id);
-
+  const [
+    currentPlayer,
+    setCurrentPlayer,
+  ] = useState(players[0].id);
 
   const currentPlayerData =
     players.find(
@@ -150,26 +169,58 @@ function Game() {
         player.id === currentPlayer
     );
 
-
   const currentColor =
     currentPlayerData?.color || "green";
-
 
   /* =========================================
      DICE
   ========================================= */
 
-  const [diceValue, setDiceValue] =
-    useState(null);
+  const [
+    diceValue,
+    setDiceValue,
+  ] = useState(null);
 
+  /* =========================================
+     COMPUTER DICE ANIMATION
+  ========================================= */
+
+  const [
+    computerRollValue,
+    setComputerRollValue,
+  ] = useState(null);
+
+  const [
+    computerRollKey,
+    setComputerRollKey,
+  ] = useState(0);
+
+  /* =========================================
+     COMPUTER TURN NUMBER
+
+     Used when computer gets a 6.
+  ========================================= */
+
+  const [
+    computerTurnNumber,
+    setComputerTurnNumber,
+  ] = useState(0);
+
+  /* =========================================
+     COMPUTER TIMER
+  ========================================= */
+
+  const computerTimerRef =
+    useRef(null);
 
   /* =========================================
      SOUND
   ========================================= */
 
-  const [soundEnabled, setSoundEnabled] =
-    useState(true);
-
+  const [
+    soundEnabled,
+    setSoundEnabled,
+  ] = useState(true);
 
   /* =========================================
      CHECK WHETHER TOKEN CAN MOVE
@@ -191,13 +242,11 @@ function Game() {
     const position =
       tokenPositions[color][tokenIndex];
 
-
     /* Finished token */
 
     if (position === 57) {
       return false;
     }
-
 
     /* Token inside home */
 
@@ -205,22 +254,17 @@ function Game() {
       return dice === 6;
     }
 
+    /* Cannot overshoot */
 
-    /* Cannot overshoot final position */
-
-    if (
-      position + dice > 57
-    ) {
+    if (position + dice > 57) {
       return false;
     }
-
 
     return true;
   };
 
-
   /* =========================================
-     CHECK IF CURRENT PLAYER HAS MOVABLE TOKEN
+     CHECK IF PLAYER HAS MOVABLE TOKEN
   ========================================= */
 
   const hasMovableToken = (
@@ -237,21 +281,8 @@ function Game() {
     );
   };
 
-
   /* =========================================
      MOVE TO NEXT PLAYER
-
-     Uses the players array rather than
-     assuming IDs are 1,2,3,4.
-
-     2 players:
-     Green → Red → Green
-
-     3 players:
-     Green → Yellow → Red → Green
-
-     4 players:
-     Green → Yellow → Red → Blue
   ========================================= */
 
   const moveToNextPlayer = () => {
@@ -261,7 +292,6 @@ function Game() {
           player.id === currentPlayer
       );
 
-
     if (currentIndex === -1) {
       setCurrentPlayer(
         players[0].id
@@ -270,54 +300,14 @@ function Game() {
       return;
     }
 
-
     const nextIndex =
       (currentIndex + 1) %
       players.length;
-
 
     setCurrentPlayer(
       players[nextIndex].id
     );
   };
-
-
-  /* =========================================
-     DICE ROLL
-  ========================================= */
-
-  const handleDiceRoll = (
-    rolledNumber
-  ) => {
-    setDiceValue(
-      rolledNumber
-    );
-
-
-    const movable =
-      hasMovableToken(
-        currentColor,
-        rolledNumber
-      );
-
-
-    /*
-      No token can move.
-
-      Give turn to next player.
-    */
-
-    if (!movable) {
-      setTimeout(() => {
-        setDiceValue(null);
-
-        moveToNextPlayer();
-      }, 700);
-
-      return;
-    }
-  };
-
 
   /* =========================================
      GET PLAYER PATH
@@ -392,14 +382,12 @@ function Game() {
       "6-0",
     ];
 
-
     const startIndices = {
       green: 0,
       yellow: 13,
       red: 26,
       blue: 39,
     };
-
 
     const homeLanes = {
       green: [
@@ -435,10 +423,8 @@ function Game() {
       ],
     };
 
-
     const startIndex =
       startIndices[color];
-
 
     const sharedPath =
       Array.from(
@@ -449,7 +435,6 @@ function Game() {
           ]
       );
 
-
     return [
       ...sharedPath,
       ...homeLanes[color],
@@ -457,69 +442,100 @@ function Game() {
     ];
   };
 
-
   /* =========================================
-     TOKEN CLICK
+     HUMAN DICE ROLL
   ========================================= */
 
-  const handleTokenClick = (
-    color,
-    tokenNumber
+  const handleDiceRoll = (
+    rolledNumber
   ) => {
-    if (
-      color !== currentColor
-    ) {
-      return;
-    }
-
-
-    if (
-      diceValue === null
-    ) {
-      return;
-    }
-
-
-    const tokenIndex =
-      tokenNumber - 1;
-
-
-    const movable =
-      canTokenMove(
-        color,
-        tokenIndex,
-        diceValue
-      );
-
-
-    if (!movable) {
-      return;
-    }
-
-
-    const oldPosition =
-      tokenPositions[color][
-        tokenIndex
-      ];
-
-
-    let newPosition;
-
-
     /*
-      Token comes out of home
-      when rolling 6.
+       IMPORTANT:
+
+       Only stop the roll if the ACTUAL
+       current player is the computer.
     */
 
     if (
-      oldPosition === -1
+      isComputerGame &&
+      currentPlayer === computerPlayerId
     ) {
+      return;
+    }
+
+    /*
+       Make sure it is actually this
+       player's turn.
+    */
+
+    if (
+      !currentPlayerData ||
+      currentPlayerData.id !== currentPlayer
+    ) {
+      return;
+    }
+
+    setDiceValue(
+      rolledNumber
+    );
+
+    const movable =
+      hasMovableToken(
+        currentColor,
+        rolledNumber
+      );
+
+    /* =====================================
+       NO MOVABLE TOKEN
+    ===================================== */
+
+    if (!movable) {
+      setTimeout(() => {
+        setDiceValue(null);
+
+        /*
+           If player rolls 6 but has no
+           movable token, still give extra
+           turn according to game rule.
+        */
+
+        if (rolledNumber === 6) {
+          return;
+        }
+
+        moveToNextPlayer();
+      }, 700);
+
+      return;
+    }
+  };
+
+  /* =========================================
+     MOVE COMPUTER TOKEN
+  ========================================= */
+
+  const moveComputerToken = (
+    tokenIndex,
+    dice
+  ) => {
+    const color =
+      computerColor;
+
+    const oldPosition =
+      tokenPositions[color][tokenIndex];
+
+    /* =====================================
+       CALCULATE NEW POSITION
+    ===================================== */
+
+    let newPosition;
+
+    if (oldPosition === -1) {
       newPosition = 0;
     } else {
       newPosition =
-        oldPosition + diceValue;
+        oldPosition + dice;
     }
-
 
     /* =====================================
        CREATE UPDATED STATE
@@ -533,11 +549,9 @@ function Game() {
       ],
     };
 
-
     updatedPositions[color][
       tokenIndex
     ] = newPosition;
-
 
     /* =====================================
        CAPTURE
@@ -550,26 +564,20 @@ function Game() {
       const path =
         getPlayerPath(color);
 
-
       const targetCell =
         path[newPosition];
 
-
-      const safeCells = new Set([
-        "2-6",
-        "2-8",
-        "6-2",
-        "6-12",
-        "8-2",
-        "8-12",
-        "12-6",
-        "12-8",
-      ]);
-
-
-      /*
-        Safe cells cannot capture.
-      */
+      const safeCells =
+        new Set([
+          "2-6",
+          "2-8",
+          "6-2",
+          "6-12",
+          "8-2",
+          "8-12",
+          "12-6",
+          "12-8",
+        ]);
 
       if (
         !safeCells.has(
@@ -584,18 +592,15 @@ function Game() {
               return;
             }
 
-
             const otherPath =
               getPlayerPath(
                 otherColor
               );
 
-
             const otherTokens =
               updatedPositions[
                 otherColor
               ];
-
 
             otherTokens.forEach(
               (
@@ -609,12 +614,10 @@ function Game() {
                   return;
                 }
 
-
                 const otherCell =
                   otherPath[
                     otherPosition
                   ];
-
 
                 if (
                   otherCell ===
@@ -628,11 +631,621 @@ function Game() {
                     ],
                   ];
 
+                  updatedPositions[
+                    otherColor
+                  ][otherIndex] = -1;
+                }
+              }
+            );
+          }
+        );
+      }
+    }
 
-                  /*
-                    Captured token goes
-                    back to home.
-                  */
+    /* =====================================
+       SAVE
+    ===================================== */
+
+    setTokenPositions(
+      updatedPositions
+    );
+
+    /* =====================================
+       CLEAR DICE
+    ===================================== */
+
+    setDiceValue(null);
+
+    /* =====================================
+       COMPUTER GETS EXTRA TURN ON 6
+    ===================================== */
+
+    if (dice === 6) {
+      setComputerTurnNumber(
+        (previous) =>
+          previous + 1
+      );
+
+      return;
+    }
+
+    /* =====================================
+       NEXT PLAYER
+    ===================================== */
+
+    moveToNextPlayer();
+  };
+
+  /* =========================================
+     COMPUTER TOKEN AI
+  ========================================= */
+
+  const chooseComputerToken = (
+    dice
+  ) => {
+    const validTokens = [];
+
+    for (
+      let i = 0;
+      i < 4;
+      i++
+    ) {
+      if (
+        canTokenMove(
+          computerColor,
+          i,
+          dice
+        )
+      ) {
+        validTokens.push(i);
+      }
+    }
+
+    if (
+      validTokens.length === 0
+    ) {
+      return null;
+    }
+
+    /* =====================================
+       EASY
+    ===================================== */
+
+    if (
+      difficulty === "easy"
+    ) {
+      const randomIndex =
+        Math.floor(
+          Math.random() *
+            validTokens.length
+        );
+
+      return validTokens[
+        randomIndex
+      ];
+    }
+
+    /* =====================================
+       SCORE TOKENS
+    ===================================== */
+
+    const scoredTokens =
+      validTokens.map(
+        (tokenIndex) => {
+          const position =
+            tokenPositions[
+              computerColor
+            ][tokenIndex];
+
+          const newPosition =
+            position === -1
+              ? 0
+              : position + dice;
+
+          let score = 0;
+
+          /* Bring token out */
+
+          if (
+            position === -1 &&
+            dice === 6
+          ) {
+            score += 80;
+          }
+
+          /* Finish */
+
+          if (
+            newPosition === 57
+          ) {
+            score += 120;
+          }
+
+          /* Move forward */
+
+          score +=
+            newPosition * 2;
+
+          /* =================================
+             CAPTURE CHECK
+          ================================= */
+
+          if (
+            newPosition >= 0 &&
+            newPosition <= 51
+          ) {
+            const computerPath =
+              getPlayerPath(
+                computerColor
+              );
+
+            const targetCell =
+              computerPath[
+                newPosition
+              ];
+
+            const safeCells =
+              new Set([
+                "2-6",
+                "2-8",
+                "6-2",
+                "6-12",
+                "8-2",
+                "8-12",
+                "12-6",
+                "12-8",
+              ]);
+
+            if (
+              !safeCells.has(
+                targetCell
+              )
+            ) {
+              activeColors.forEach(
+                (otherColor) => {
+                  if (
+                    otherColor ===
+                    computerColor
+                  ) {
+                    return;
+                  }
+
+                  const otherPath =
+                    getPlayerPath(
+                      otherColor
+                    );
+
+                  tokenPositions[
+                    otherColor
+                  ].forEach(
+                    (otherPosition) => {
+                      if (
+                        otherPosition >=
+                          0 &&
+                        otherPosition <=
+                          51
+                      ) {
+                        if (
+                          otherPath[
+                            otherPosition
+                          ] ===
+                          targetCell
+                        ) {
+                          score += 150;
+                        }
+                      }
+                    }
+                  );
+                }
+              );
+            }
+          }
+
+          /* =================================
+             HARD MODE
+          ================================= */
+
+          if (
+            difficulty === "hard"
+          ) {
+            if (
+              position >= 0
+            ) {
+              score +=
+                position * 2;
+            }
+
+            if (
+              newPosition >= 52
+            ) {
+              score += 60;
+            }
+
+            if (
+              newPosition === 57
+            ) {
+              score += 100;
+            }
+          }
+
+          return {
+            tokenIndex,
+            score,
+          };
+        }
+      );
+
+    scoredTokens.sort(
+      (a, b) =>
+        b.score - a.score
+    );
+
+    return scoredTokens[0]
+      .tokenIndex;
+  };
+
+  /* =========================================
+     COMPUTER TURN
+  ========================================= */
+
+  useEffect(() => {
+    /*
+       Not computer game
+    */
+
+    if (!isComputerGame) {
+      return;
+    }
+
+    /*
+       IMPORTANT:
+
+       Only execute this effect when
+       currentPlayer is actually Computer.
+    */
+
+    if (!isComputerTurn) {
+      return;
+    }
+
+    /*
+       Do not start another roll while
+       a dice value already exists.
+    */
+
+    if (diceValue !== null) {
+      return;
+    }
+
+    /* Clear previous timer */
+
+    if (
+      computerTimerRef.current
+    ) {
+      clearTimeout(
+        computerTimerRef.current
+      );
+
+      computerTimerRef.current =
+        null;
+    }
+
+    /* =====================================
+       COMPUTER THINKING DELAY
+    ===================================== */
+
+    computerTimerRef.current =
+      setTimeout(() => {
+        const rolledNumber =
+          Math.floor(
+            Math.random() * 6
+          ) + 1;
+
+        /* =================================
+           SET ACTUAL GAME DICE
+        ================================= */
+
+        setDiceValue(
+          rolledNumber
+        );
+
+        /* =================================
+           SEND NUMBER TO DICE COMPONENT
+        ================================= */
+
+        setComputerRollValue(
+          rolledNumber
+        );
+
+        /* =================================
+           FORCE NEW DICE ANIMATION
+        ================================= */
+
+        setComputerRollKey(
+          (previous) =>
+            previous + 1
+        );
+
+        /* =================================
+           CHECK MOVABLE TOKEN
+        ================================= */
+
+        const movable =
+          hasMovableToken(
+            computerColor,
+            rolledNumber
+          );
+
+        /* =================================
+           NO MOVE
+        ================================= */
+
+        if (!movable) {
+          computerTimerRef.current =
+            setTimeout(() => {
+              setDiceValue(null);
+
+              if (
+                rolledNumber === 6
+              ) {
+                setComputerTurnNumber(
+                  (previous) =>
+                    previous + 1
+                );
+              } else {
+                moveToNextPlayer();
+              }
+            }, 1100);
+
+          return;
+        }
+
+        /* =================================
+           MOVE AFTER DICE ANIMATION
+        ================================= */
+
+        computerTimerRef.current =
+          setTimeout(() => {
+            const selectedToken =
+              chooseComputerToken(
+                rolledNumber
+              );
+
+            if (
+              selectedToken === null
+            ) {
+              setDiceValue(null);
+
+              if (
+                rolledNumber === 6
+              ) {
+                setComputerTurnNumber(
+                  (previous) =>
+                    previous + 1
+                );
+              } else {
+                moveToNextPlayer();
+              }
+
+              return;
+            }
+
+            moveComputerToken(
+              selectedToken,
+              rolledNumber
+            );
+          }, 1100);
+      }, 1000);
+
+    /* =====================================
+       CLEANUP
+    ===================================== */
+
+    return () => {
+      if (
+        computerTimerRef.current
+      ) {
+        clearTimeout(
+          computerTimerRef.current
+        );
+
+        computerTimerRef.current =
+          null;
+      }
+    };
+
+  }, [
+    isComputerGame,
+    isComputerTurn,
+    computerTurnNumber,
+  ]);
+
+  /* =========================================
+     CLEAN COMPUTER TIMER
+  ========================================= */
+
+  useEffect(() => {
+    return () => {
+      if (
+        computerTimerRef.current
+      ) {
+        clearTimeout(
+          computerTimerRef.current
+        );
+
+        computerTimerRef.current =
+          null;
+      }
+    };
+  }, []);
+
+  /* =========================================
+     HUMAN TOKEN CLICK
+  ========================================= */
+
+  const handleTokenClick = (
+    color,
+    tokenNumber
+  ) => {
+    /*
+       Computer tokens cannot be
+       manually controlled.
+    */
+
+    if (
+      isComputerGame &&
+      color === computerColor
+    ) {
+      return;
+    }
+
+    /*
+       Only current player
+    */
+
+    if (
+      color !== currentColor
+    ) {
+      return;
+    }
+
+    /*
+       No dice
+    */
+
+    if (
+      diceValue === null
+    ) {
+      return;
+    }
+
+    const tokenIndex =
+      tokenNumber - 1;
+
+    const movable =
+      canTokenMove(
+        color,
+        tokenIndex,
+        diceValue
+      );
+
+    if (!movable) {
+      return;
+    }
+
+    const oldPosition =
+      tokenPositions[color][
+        tokenIndex
+      ];
+
+    /* =====================================
+       NEW POSITION
+    ===================================== */
+
+    let newPosition;
+
+    if (
+      oldPosition === -1
+    ) {
+      newPosition = 0;
+    } else {
+      newPosition =
+        oldPosition + diceValue;
+    }
+
+    /* =====================================
+       UPDATED STATE
+    ===================================== */
+
+    const updatedPositions = {
+      ...tokenPositions,
+
+      [color]: [
+        ...tokenPositions[color],
+      ],
+    };
+
+    updatedPositions[color][
+      tokenIndex
+    ] = newPosition;
+
+    /* =====================================
+       CAPTURE
+    ===================================== */
+
+    if (
+      newPosition >= 0 &&
+      newPosition <= 51
+    ) {
+      const path =
+        getPlayerPath(color);
+
+      const targetCell =
+        path[newPosition];
+
+      const safeCells =
+        new Set([
+          "2-6",
+          "2-8",
+          "6-2",
+          "6-12",
+          "8-2",
+          "8-12",
+          "12-6",
+          "12-8",
+        ]);
+
+      if (
+        !safeCells.has(
+          targetCell
+        )
+      ) {
+        activeColors.forEach(
+          (otherColor) => {
+            if (
+              otherColor === color
+            ) {
+              return;
+            }
+
+            const otherPath =
+              getPlayerPath(
+                otherColor
+              );
+
+            const otherTokens =
+              updatedPositions[
+                otherColor
+              ];
+
+            otherTokens.forEach(
+              (
+                otherPosition,
+                otherIndex
+              ) => {
+                if (
+                  otherPosition < 0 ||
+                  otherPosition > 51
+                ) {
+                  return;
+                }
+
+                const otherCell =
+                  otherPath[
+                    otherPosition
+                  ];
+
+                if (
+                  otherCell ===
+                  targetCell
+                ) {
+                  updatedPositions[
+                    otherColor
+                  ] = [
+                    ...updatedPositions[
+                      otherColor
+                    ],
+                  ];
 
                   updatedPositions[
                     otherColor
@@ -646,22 +1259,19 @@ function Game() {
       }
     }
 
-
     /* =====================================
-       SAVE TOKEN POSITION
+       SAVE
     ===================================== */
 
     setTokenPositions(
       updatedPositions
     );
 
-
     /* =====================================
        CLEAR DICE
     ===================================== */
 
     setDiceValue(null);
-
 
     /* =====================================
        SIX = EXTRA TURN
@@ -673,14 +1283,12 @@ function Game() {
       return;
     }
 
-
     /* =====================================
        NEXT PLAYER
     ===================================== */
 
     moveToNextPlayer();
   };
-
 
   /* =========================================
      RESTART
@@ -694,15 +1302,20 @@ function Game() {
       blue: createTokens(),
     });
 
-
     setCurrentPlayer(
       players[0].id
     );
 
-
     setDiceValue(null);
-  };
 
+    setComputerRollValue(
+      null
+    );
+
+    setComputerRollKey(0);
+
+    setComputerTurnNumber(0);
+  };
 
   /* =========================================
      NEW GAME
@@ -713,7 +1326,6 @@ function Game() {
       "/game-setup"
     );
   };
-
 
   /* =========================================
      SOUND
@@ -726,7 +1338,6 @@ function Game() {
     );
   };
 
-
   /* =========================================
      HOW TO PLAY
   ========================================= */
@@ -737,7 +1348,6 @@ function Game() {
     );
   };
 
-
   /* =========================================
      EXIT
   ========================================= */
@@ -745,7 +1355,6 @@ function Game() {
   const handleExit = () => {
     navigate("/");
   };
-
 
   /* =========================================
      RENDER PLAYER
@@ -755,6 +1364,11 @@ function Game() {
     player,
     positionClass
   ) => {
+    const playerIsComputer =
+      isComputerGame &&
+      player.id ===
+        computerPlayerId;
+
     return (
       <div
         key={player.id}
@@ -767,79 +1381,90 @@ function Game() {
           }
         />
 
-        <Dice
-          onRoll={
-            handleDiceRoll
-          }
+        {/* =================================
+            COMPUTER DICE
+        ================================= */}
 
-          disabled={
-            currentPlayer !==
-              player.id ||
-            diceValue !== null
-          }
-        />
+        {playerIsComputer ? (
+          <Dice
+            disabled={true}
+            computerRoll={
+              computerRollValue
+            }
+            computerRollKey={
+              computerRollKey
+            }
+          />
+        ) : (
+          /* ===============================
+             HUMAN DICE
+          =============================== */
+
+          <Dice
+            onRoll={
+              handleDiceRoll
+            }
+            disabled={
+              currentPlayer !==
+                player.id ||
+              diceValue !== null
+            }
+          />
+        )}
       </div>
     );
   };
 
-
   /* =========================================
      PLAYER POSITIONS
+
+     SAME OLD BOARD LAYOUT
   ========================================= */
 
-  const getPlayerPosition =
-    (index) => {
-      /*
-        2 PLAYERS
+  const getPlayerPosition = (
+    index
+  ) => {
+    /* =====================================
+       2 PLAYERS
+    ===================================== */
 
-        Green = top
-        Red = bottom
-      */
+    if (
+      playerCount === 2
+    ) {
+      return index === 0
+        ? "player-two-top"
+        : "player-two-bottom";
+    }
 
-      if (
-        playerCount === 2
-      ) {
-        return index === 0
-          ? "player-two-top"
-          : "player-two-bottom";
-      }
+    /* =====================================
+       3 PLAYERS
+    ===================================== */
 
-
-      /*
-        3 PLAYERS
-
-        Green = top-left
-        Yellow = top-right
-        Red = bottom-center
-      */
-
-      if (
-        playerCount === 3
-      ) {
-        const positions = [
-          "player-three-top-left",
-          "player-three-top-right",
-          "player-three-bottom",
-        ];
-
-        return positions[index];
-      }
-
-
-      /*
-        4 PLAYERS
-      */
-
+    if (
+      playerCount === 3
+    ) {
       const positions = [
-        "player-top-left",
-        "player-top-right",
-        "player-bottom-right",
-        "player-bottom-left",
+        "player-three-top-left",
+        "player-three-top-right",
+        "player-three-bottom",
       ];
 
       return positions[index];
-    };
+    }
 
+    /* =====================================
+       4 PLAYERS
+    ===================================== */
+
+    const positions = [
+      "player-top-left",
+      "player-top-right",
+      "player-bottom-right",
+      "player-bottom-left",
+    ];
+
+    return positions[index];
+  };
 
   /* =========================================
      RENDER
@@ -850,20 +1475,22 @@ function Game() {
 
       <div className="game-container">
 
-        {/* Turn Indicator */}
+        {/* =================================
+            TURN INDICATOR
+        ================================= */}
 
         <div className="game-turn-section">
+
           <TurnIndicator
             currentPlayer={
               currentPlayer
             }
-
             playerColor={
               currentColor
             }
           />
-        </div>
 
+        </div>
 
         {/* =================================
             BOARD + PLAYERS
@@ -873,7 +1500,9 @@ function Game() {
           className={`players-board-layout player-count-${playerCount}`}
         >
 
-          {/* PLAYERS */}
+          {/* =================================
+              PLAYERS
+          ================================= */}
 
           {players.map(
             (player, index) =>
@@ -885,8 +1514,9 @@ function Game() {
               )
           )}
 
-
-          {/* BOARD */}
+          {/* =================================
+              BOARD
+          ================================= */}
 
           <div className="board-section">
 
@@ -915,7 +1545,6 @@ function Game() {
           </div>
 
         </div>
-
 
         {/* =================================
             GAME CONTROLS
